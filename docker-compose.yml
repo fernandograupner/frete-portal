@@ -1,0 +1,22 @@
+# MySQL já com dados iniciais (schema rodado na 1ª subida do volume).
+# Uso na raiz do projeto:
+#   docker compose up -d
+# Em backend/.env: DB_HOST=127.0.0.1  DB_PORT=3306  DB_USER=root
+#                     DB_PASS=freteportal  DB_NAME=frete_portal
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: frete-portal-mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: freteportal
+      TZ: America/Sao_Paulo
+    volumes:
+      - frete_mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+
+volumes:
+  frete_mysql_data:
