@@ -1,66 +1,64 @@
-# Portal Frete · Espelho de Frete
+# Portal Frete
 
-API Node.js (Express) + frontend estático (`frontend/index.html`). O servidor entrega o site e expõe a API sob `/api`.
+Sistema web para cálculo de espelho de frete (CIF/FOB), histórico de operações e painel administrativo de tarifas, pedágios, clientes e usuários.
 
-## Ver só a interface (para revisão rápida)
+## Stack
 
-Sem Node/MySQL: abra no navegador o arquivo estático **`docs/previews/interface-demo.html`** (mockups com dados fictícios — mesmo tema visual do portal).  
-Instruções curtas em **`docs/previews/README.md`**.
+| Camada | Tecnologia |
+|--------|------------|
+| Runtime | Node.js 18+ |
+| API | Express 4, REST JSON |
+| Auth | JWT (`jsonwebtoken`) + bcryptjs |
+| Banco | MySQL 8 (`mysql2`, pool) |
+| Front | HTML/CSS/JS, React 18 via CDN (SPA monolítica em `frontend/index.html`) |
+| PDF | jsPDF (client-side) |
 
-## Pré-requisitos
+## Arquitetura
 
-- [Node.js](https://nodejs.org/) 18+
-- MySQL 8.x (com usuário/senha e base criadas)
+Monólito leve: um processo Express serve o front estático e a API em `/api`. Regras de negócio do frete em `backend/services/freteService.js` (tarifa por messorregião/faixa de m³, ad valorem, pedágio, paletização, dedicado, ICMS por dentro). Cada cálculo persiste snapshot JSON em `calculos`.
 
-## 1. Banco de dados
+```
+frontend/index.html  →  fetch /api  →  routes (auth | frete | admin)  →  MySQL
+```
 
-**Windows PowerShell não aceita `mysql … < arquivo.sql`** (erro “Operador '<' reservado”). Veja comandos que funcionam em **`database/README.md`**.
+## Estrutura
 
-Ou suba MySQL já com o schema usando Docker, na raiz do projeto:
+```
+backend/          API, middlewares, services
+frontend/         UI (Calculadora, Histórico, Admin)
+database/         schema.sql, migrações
+docs/previews/    mock estático da interface (sem backend)
+```
+
+## API (principais rotas)
+
+| Método | Rota | Auth |
+|--------|------|------|
+| POST | `/api/auth/login` | — |
+| GET | `/api/health` | — |
+| GET | `/api/clientes`, `/api/cidades` | JWT |
+| POST | `/api/calcular` | JWT |
+| GET | `/api/calculos`, `/api/calculos/:id` | JWT |
+| CRUD | `/api/admin/*` (tarifas, clientes, usuários, pedágios, ICMS) | JWT + admin |
+
+Resposta padrão: `{ sucesso, dados?, erro? }`.
+
+## Banco (`frete_portal`)
+
+`usuarios`, `messorregioes`, `cidades`, `clientes`, `tarifas`, `pedagios`, `icms_uf`, `calculos` (histórico + `snapshot_json`).
+
+## Execução rápida
 
 ```bash
-docker compose up -d
+docker compose up -d          # MySQL + schema (opcional)
+cd backend && copy .env.example .env   # ajustar DB_* e JWT_SECRET
+npm install && npm run dev
 ```
 
-No `backend/.env` use então `DB_PASS=freteportal` e `DB_USER=root`, `DB_HOST=127.0.0.1`, `DB_NAME=frete_portal`.
+App: `http://localhost:3001` · Health: `/api/health`
 
-Sem Docker, importação manual:
+**Seed:** `fernando.alves` / `admin123` · Detalhes de importação do schema: `database/README.md`
 
-```bash
-mysql -u root -p < database/schema.sql
-```
+## Variáveis (`backend/.env`)
 
-(no terminal **CMD**, ou no PowerShell use o comando com `Get-Content` descrito em `database/README.md`).
-
-Credenciais do **Portal** após importar `schema.sql`: usuário **`fernando.alves`** e senha **`admin123`** (ou e-mail **`fernandograupneralves@gmail.com`** em bases sem coluna `login` — ver `database/migration_usuario_login.sql`).
-
-## 2. Configuração da API
-
-```bash
-cd backend
-copy .env.example .env
-```
-
-Edite **`.env`**: `DB_*`, `JWT_SECRET`. Para servir frontend e API no mesmo host, use por exemplo:
-
-```env
-FRONTEND_URL=http://localhost:3001
-PORT=3001
-SKIP_LOGIN=0
-```
-
-## 3. Instalar e rodar
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-Abra **http://localhost:3001** (ou a porta definida em `PORT`). Saúde da API: **http://localhost:3001/api/health**.
-
-Em desenvolvimento com recarga automática: `npm run dev` (nodemon).
-
-## Abrir só o arquivo HTML
-
-Se preferir abrir `frontend/index.html` direto no navegador, o script usa automaticamente **http://localhost:3001/api** para as chamadas (é preciso que a API esteja rodando).
+`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`, `JWT_SECRET`, `PORT`, `SKIP_LOGIN` (dev: `0` = exige login).
