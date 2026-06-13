@@ -52,6 +52,6 @@ app.listen(PORT, () => {
     process.env.SKIP_LOGIN === 'true' ||
     process.env.SKIP_LOGIN === 'yes'
   )
-    console.warn('\n⚠  SKIP_LOGIN ativo — API sem verificação de JWT (use só em desenvolvimento).\n');
+    console.warn('\n⚠  SKIP_LOGIN ativo — API sem verificação de JWT (só desenvolvimento).\n');
   else console.log('');
 });

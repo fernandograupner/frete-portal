@@ -1,5 +1,5 @@
 -- ============================================================
---  PORTAL ESPELHO DE FRETE - DRYLOCK
+--  PORTAL FRETE - ESPELHO DE FRETE
 --  Execute este arquivo no MySQL para criar tudo:
 --  mysql -u root -p < schema.sql
 -- ============================================================
@@ -133,8 +133,8 @@ CREATE TABLE IF NOT EXISTS calculos (
 
 -- Usuário admin (senha: admin123)
 INSERT INTO usuarios (nome, login, email, senha_hash, perfil) VALUES
-('Administrador', 'fernando.alves', 'admin@drylock.com.br',
- '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TdE2yBzY.9JSME8IeV5oE2JMgJ3y', 'admin');
+('Administrador', 'fernando.alves', 'fernandograupneralves@gmail.com',
+ '$2a$12$fTu.rhXMfEOjWSqj2nByeeOFpIyRuHKfuNxRTp3eW1m7mp/B8.75m', 'admin');
 
 -- Messorregiões do Sul
 INSERT INTO messorregioes (id, nome, uf) VALUES

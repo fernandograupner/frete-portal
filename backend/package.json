@@ -1,7 +1,7 @@
 {
   "name": "frete-portal-backend",
   "version": "1.0.0",
-  "description": "API REST - Portal Espelho de Frete Drylock",
+  "description": "API REST - Portal Frete · Espelho de Frete",
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon index.js",

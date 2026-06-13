@@ -28,7 +28,7 @@ router.post('/login', async (req, res, next) => {
         return res.status(503).json({
           sucesso: false,
           erro:
-            'Este banco ainda não tem a coluna usuarios.login. Rode database/migration_usuario_login.sql no MySQL (veja database/README.md). Até lá, entre com o e-mail do usuário (ex.: admin@drylock.com.br).',
+            'Este banco ainda não tem a coluna usuarios.login. Rode database/migration_usuario_login.sql no MySQL (veja database/README.md). Até lá, entre com o e-mail do usuário (ex.: fernandograupneralves@gmail.com).',
         });
       return res.status(401).json({ sucesso: false, erro: 'Credenciais inválidas.' });
     }

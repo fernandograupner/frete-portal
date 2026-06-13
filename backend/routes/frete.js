@@ -91,7 +91,7 @@ router.get('/calculos', async (req, res, next) => {
               cal.created_at, cal.paletizado, cal.dedicado,
               c.nome_fantasia AS cliente_nome, c.nome AS cliente_razao,
               ci.nome AS cidade, ci.uf, m.nome AS meso,
-              u.nome AS usuario
+              u.nome AS usuario, u.login AS usuario_login, u.email AS usuario_email
        ${fromBase}
        ${where}
        ORDER BY cal.created_at DESC LIMIT ${safeLimite} OFFSET ${safeOffset}`,

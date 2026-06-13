@@ -8,7 +8,7 @@ USE frete_portal;
 ALTER TABLE usuarios ADD COLUMN login VARCHAR(80) NULL UNIQUE COMMENT 'Nome de usuário para entrar no portal' AFTER nome;
 
 -- 2) Admin padrão do seed antigo -> fernando.alves
-UPDATE usuarios SET login = 'fernando.alves' WHERE email = 'admin@drylock.com.br' AND login IS NULL;
+UPDATE usuarios SET login = 'fernando.alves' WHERE email = 'fernandograupneralves@gmail.com' AND login IS NULL;
 
 -- 3) Demais usuários: prefixo estável único (ajuste manual se quiser outro padrão)
 UPDATE usuarios SET login = CONCAT('user_', id) WHERE login IS NULL;
