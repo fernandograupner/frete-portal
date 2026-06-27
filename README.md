@@ -10,7 +10,7 @@ Sistema web para cálculo de espelho de frete (CIF/FOB), histórico de operaçõ
 | API | Express 4, REST JSON |
 | Auth | JWT (`jsonwebtoken`) + bcryptjs |
 | Banco | MySQL 8 (`mysql2`, pool) |
-| Front | HTML/CSS/JS, React 18 via CDN (SPA monolítica em `frontend/index.html`) |
+| Front | HTML/CSS/JS modular, React 18 via CDN (`login.html` + `app.html`) |
 | PDF | jsPDF (client-side) |
 
 ## Arquitetura
@@ -18,16 +18,14 @@ Sistema web para cálculo de espelho de frete (CIF/FOB), histórico de operaçõ
 Monólito leve: um processo Express serve o front estático e a API em `/api`. Regras de negócio do frete em `backend/services/freteService.js` (tarifa por messorregião/faixa de m³, ad valorem, pedágio, paletização, dedicado, ICMS por dentro). Cada cálculo persiste snapshot JSON em `calculos`.
 
 ```
-frontend/index.html  →  fetch /api  →  routes (auth | frete | admin)  →  MySQL
-```
-
-## Estrutura
-
-```
-backend/          API, middlewares, services
-frontend/         UI (Calculadora, Histórico, Admin)
-database/         schema.sql, migrações
-docs/previews/    mock estático da interface (sem backend)
+frontend/index.html  →  redireciona para login ou app
+frontend/login.html  →  tela de login (leve, sem código do app)
+frontend/app.html    →  calculadora, histórico, admin
+frontend/js/         →  módulos (utils, componentes, pdf…)
+frontend/css/        →  estilos (base, login, app)
+backend/             →  API, middlewares, services
+database/            →  schema.sql, migrações
+docs/previews/       →  mock estático da interface (sem backend)
 ```
 
 ## API (principais rotas)
