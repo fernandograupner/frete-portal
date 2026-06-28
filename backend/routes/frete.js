@@ -8,19 +8,28 @@ router.use(autenticar);
 // GET /api/clientes?busca=
 router.get('/clientes', async (req, res, next) => {
   try {
-    const busca = `%${(req.query.busca || '').trim()}%`;
-    const [rows] = await db.execute(
-      `SELECT c.id, c.codigo, c.loja, c.nome, c.nome_fantasia,
+    const termo = (req.query.busca || '').trim();
+    const listaCompleta = termo === '';
+
+    let sql = `SELECT c.id, c.codigo, c.loja, c.nome, c.nome_fantasia,
               c.municipio, c.uf, c.tipo_frete, c.paletizado, c.dedicado,
               c.cidade_id, ci.nome AS cidade_nome, ci.meso_id, m.nome AS meso_nome
        FROM clientes c
        LEFT JOIN cidades ci ON ci.id = c.cidade_id
        LEFT JOIN messorregioes m ON m.id = ci.meso_id
-       WHERE c.ativo = 1
-         AND (c.nome_fantasia LIKE ? OR c.nome LIKE ? OR c.codigo LIKE ?)
-       ORDER BY c.nome_fantasia, c.nome LIMIT 50`,
-      [busca, busca, busca]
-    );
+       WHERE c.ativo = 1`;
+    const params = [];
+
+    if (!listaCompleta) {
+      const busca = `%${termo}%`;
+      sql += ' AND (c.nome_fantasia LIKE ? OR c.nome LIKE ? OR c.codigo LIKE ?)';
+      params.push(busca, busca, busca);
+      sql += ' ORDER BY c.nome_fantasia, c.nome LIMIT 50';
+    } else {
+      sql += ' ORDER BY c.nome_fantasia, c.nome';
+    }
+
+    const [rows] = await db.execute(sql, params);
     res.json({ sucesso: true, dados: rows });
   } catch (err) { next(err); }
 });

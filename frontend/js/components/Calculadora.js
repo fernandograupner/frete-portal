@@ -19,6 +19,8 @@ PF.Calculadora = function Calculadora({
   const { h, api, brl, Autocomplete, EspelhoFrete, gerarPDF } = PF;
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
+  const [clienteAcKey, setClienteAcKey] = useState(0);
+  const [cidadeAcKey, setCidadeAcKey] = useState(0);
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
   const buscarClientes = useCallback(
@@ -72,12 +74,33 @@ PF.Calculadora = function Calculadora({
     setLoading(false);
   };
 
+  const limparCliente = () => {
+    setClienteSel(null);
+    setCidadeSel(null);
+    setClienteAcKey((k) => k + 1);
+    setCidadeAcKey((k) => k + 1);
+  };
+
+  const desmarcarCliente = () => {
+    setClienteSel(null);
+    setCidadeSel(null);
+  };
+
+  const limparCidade = () => {
+    setCidadeSel(null);
+    setCidadeAcKey((k) => k + 1);
+  };
+
+  const desmarcarCidade = () => setCidadeSel(null);
+
   const limpar = () => {
     setForm({ codigoM3: '', valorNF: '', m3: '', qtdePallets: '' });
     setClienteSel(null);
     setCidadeSel(null);
     setResultado(null);
     setErro('');
+    setClienteAcKey((k) => k + 1);
+    setCidadeAcKey((k) => k + 1);
     setResetKey((k) => k + 1);
   };
 
@@ -101,7 +124,7 @@ PF.Calculadora = function Calculadora({
         h(
           'div',
           { className: 'field' },
-          h('label', { className: 'field-label' }, 'Código M3 / Pedido'),
+          h('label', { className: 'field-label' }, 'Número Pedido'),
           h('input', {
             type: 'text',
             placeholder: 'Ex: PED-2026-001',
@@ -112,7 +135,11 @@ PF.Calculadora = function Calculadora({
         h(Autocomplete, {
           label: 'Cliente Destino',
           placeholder: 'Buscar por nome ou código…',
-          resetKey,
+          resetKey: clienteAcKey,
+          selectedLabel: clienteSel ? clienteSel.nome_fantasia || clienteSel.nome : '',
+          onClear: desmarcarCliente,
+          showListButton: true,
+          listButtonLabel: 'Lista',
           buscar: buscarClientes,
           onSelect: onCliente,
           getLabel: (c) => c.nome_fantasia || c.nome,
@@ -134,7 +161,22 @@ PF.Calculadora = function Calculadora({
           h(
             'div',
             { className: 'client-card' },
-            h('div', { className: 'client-card-name' }, clienteSel.nome_fantasia || clienteSel.nome),
+            h(
+              'div',
+              { className: 'client-card-head' },
+              h('div', { className: 'client-card-name' }, clienteSel.nome_fantasia || clienteSel.nome),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'selection-clear',
+                  onClick: limparCliente,
+                  title: 'Remover cliente',
+                  'aria-label': 'Remover cliente',
+                },
+                '×'
+              )
+            ),
             h(
               'div',
               { className: 'client-card-tags' },
@@ -152,7 +194,11 @@ PF.Calculadora = function Calculadora({
         h(Autocomplete, {
           label: 'Cidade Destino',
           placeholder: 'Buscar cidade…',
-          resetKey,
+          resetKey: cidadeAcKey,
+          selectedLabel: cidadeSel ? `${cidadeSel.nome} / ${cidadeSel.uf}` : '',
+          onClear: desmarcarCidade,
+          showListButton: true,
+          listButtonLabel: 'Lista',
           buscar: buscarCidades,
           onSelect: setCidadeSel,
           getLabel: (c) => `${c.nome} / ${c.uf}`,
@@ -167,9 +213,20 @@ PF.Calculadora = function Calculadora({
         cidadeSel &&
           h(
             'div',
-            { style: { fontSize: 11, color: 'var(--ink3)', margin: '-4px 0 8px', display: 'flex', gap: 8 } },
+            { className: 'dest-sel-row' },
             h('span', null, `📍 ${cidadeSel.meso_nome}`),
-            h('span', null, `· ${cidadeSel.uf}`)
+            h('span', null, `· ${cidadeSel.uf}`),
+            h(
+              'button',
+              {
+                type: 'button',
+                className: 'selection-clear',
+                onClick: limparCidade,
+                title: 'Remover cidade',
+                'aria-label': 'Remover cidade',
+              },
+              '×'
+            )
           ),
         h('div', { className: 'sep' }),
         h(

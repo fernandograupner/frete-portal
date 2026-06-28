@@ -208,7 +208,7 @@ PF.Admin = function Admin({token,usuarioAtual}){
       setCliCityReset(k=>k+1);
     }},'+ Novo cliente'),
     tab==='usuarios'&&PF.h('button',{type:'button',className:'btn btn-primary btn-sm',onClick:()=>{
-      setUsuarioModal({mode:'novo'});
+      setUsuarioModal({mode:'novo',key:Date.now()});
       setUsrForm({nome:'',login:'',email:'',senha:'',perfil:'user',ativo:true});
     }},'+ Novo usuário')
   );
@@ -287,16 +287,18 @@ PF.Admin = function Admin({token,usuarioAtual}){
       )
     ),
     usuarioModal&&PF.h('div',{className:'modal-bg',onClick:e=>{if(e.target===e.currentTarget)setUsuarioModal(null)}},
-      PF.h('div',{className:'modal-box'},
+      PF.h('div',{className:'modal-box',key:usuarioModal.mode==='novo'?'usr-novo-'+(usuarioModal.key||0):'usr-edit-'+usuarioModal.row.id},
         PF.h('div',{className:'modal-title'},usuarioModal.mode==='novo'?'Novo usuário':'Editar usuário'),
-        PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Nome'),PF.h('input',{value:usrForm.nome,onChange:e=>setUsrForm(f=>({...f,nome:e.target.value}))})),
-        usuarioModal.mode==='novo'&&PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Usuário (login)'),PF.h('input',{type:'text',autoCapitalize:'none',spellCheck:false,placeholder:'ex.: maria.silva',value:usrForm.login,onChange:e=>setUsrForm(f=>({...f,login:e.target.value}))})),
-        usuarioModal.mode==='edit'&&PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Usuário'),PF.h('input',{type:'text',disabled:true,value:usrForm.login})),
-        PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'E-mail'),PF.h('input',{type:'email',disabled:usuarioModal.mode==='edit',value:usrForm.email,onChange:e=>setUsrForm(f=>({...f,email:e.target.value}))})),
-        usuarioModal.mode==='novo'&&PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Senha inicial'),PF.h('input',{type:'password',placeholder:'mín. 6 caracteres',value:usrForm.senha,onChange:e=>setUsrForm(f=>({...f,senha:e.target.value}))})),
-        PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Perfil'),
-          PF.h('select',{value:usrForm.perfil,onChange:e=>setUsrForm(f=>({...f,perfil:e.target.value}))},PF.h('option',{value:'user'},'Usuário'),PF.h('option',{value:'admin'},'Administrador'))),
-        usuarioModal.mode==='edit'&&PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Ativo'),PF.h('select',{value:usrForm.ativo?'1':'0',onChange:e=>setUsrForm(f=>({...f,ativo:e.target.value==='1'}))},PF.h('option',{value:'1'},'Sim'),PF.h('option',{value:'0'},'Não'))),
+        PF.h('form',{autoComplete:'off',onSubmit:e=>e.preventDefault()},
+          PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Nome'),PF.h('input',{value:usrForm.nome,autoComplete:'off',onChange:e=>setUsrForm(f=>({...f,nome:e.target.value}))})),
+          usuarioModal.mode==='novo'&&PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Usuário (login)'),PF.h('input',{type:'text',autoCapitalize:'none',spellCheck:false,autoComplete:'off',name:'pf-new-login',placeholder:'ex.: maria.silva',value:usrForm.login,onChange:e=>setUsrForm(f=>({...f,login:e.target.value}))})),
+          usuarioModal.mode==='edit'&&PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Usuário'),PF.h('input',{type:'text',disabled:true,value:usrForm.login})),
+          PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'E-mail'),PF.h('input',{type:'email',disabled:usuarioModal.mode==='edit',autoComplete:'off',name:usuarioModal.mode==='novo'?'pf-new-email':'pf-edit-email',value:usrForm.email,onChange:e=>setUsrForm(f=>({...f,email:e.target.value}))})),
+          usuarioModal.mode==='novo'&&PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Senha inicial'),PF.h('input',{type:'password',autoComplete:'new-password',name:'pf-new-password',placeholder:'mín. 6 caracteres',value:usrForm.senha,onChange:e=>setUsrForm(f=>({...f,senha:e.target.value}))})),
+          PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Perfil'),
+            PF.h('select',{value:usrForm.perfil,onChange:e=>setUsrForm(f=>({...f,perfil:e.target.value}))},PF.h('option',{value:'user'},'Usuário'),PF.h('option',{value:'admin'},'Administrador'))),
+          usuarioModal.mode==='edit'&&PF.h('div',{className:'field'},PF.h('label',{className:'field-label'},'Ativo'),PF.h('select',{value:usrForm.ativo?'1':'0',onChange:e=>setUsrForm(f=>({...f,ativo:e.target.value==='1'}))},PF.h('option',{value:'1'},'Sim'),PF.h('option',{value:'0'},'Não')))
+        ),
         PF.h('div',{className:'modal-footer'},PF.h('button',{type:'button',className:'btn btn-ghost',onClick:()=>setUsuarioModal(null)},'Cancelar'),PF.h('button',{type:'button',className:'btn btn-primary',onClick:salvarUsuario},'Salvar'))
       )
     ),

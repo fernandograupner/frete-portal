@@ -100,7 +100,7 @@ PF.Historico = function Historico({ token, refresh }) {
                 h(
                   'tr',
                   null,
-                  ['Data', 'M3 / Pedido', 'Cliente', 'Destino', 'Volume', 'Frete s/ ICMS', 'ICMS', 'Total'].map((c) =>
+                  ['Data', 'Número Pedido', 'Cliente', 'Destino', 'Volume', 'Frete s/ ICMS', 'ICMS', 'Total'].map((c) =>
                     h('th', { key: c }, c)
                   )
                 )
@@ -155,7 +155,7 @@ PF.Historico = function Historico({ token, refresh }) {
             h(
               'div',
               { className: 'field' },
-              h('label', { className: 'field-label' }, 'M3 / Pedido'),
+              h('label', { className: 'field-label' }, 'Número Pedido'),
               h('p', { style: { fontSize: 14, fontWeight: 600, margin: 0 }, className: 'mono' }, detalhe.codigo_m3)
             ),
             h(
